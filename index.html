@@ -20,24 +20,74 @@
       <section id="monster" class="container">
         <h2>Monster Health</h2>
         <div class="healthbar">
-          <div class="healthbar__value"></div>
+          <div class="healthbar__value" :style="monsterHealthBarStyles"></div>
         </div>
       </section>
+
       <section id="player" class="container">
         <h2>Your Health</h2>
         <div class="healthbar">
-          <div class="healthbar__value"></div>
+          <div class="healthbar__value" :style="playerHealthBarStyles"></div>
         </div>
       </section>
-      <section id="controls">
-        <button>ATTACK</button>
-        <button>SPECIAL ATTACK</button>
-        <button>HEAL</button>
-        <button>SURRENDER</button>
+
+      <section v-if="!currentWinner" id="controls">
+        <button @click="attack">
+          ATTACK
+        </button>
+        <button @click="specialAttack" :disabled="isSpecialAttackButtonDisabled">
+          SPECIAL ATTACK
+        </button>
+        <button @click="heal" :disabled="isHealButtonDisabled">
+          HEAL
+        </button>
+        <button @click="surrender">
+          SURRENDER
+        </button>
       </section>
+
+      <section id="game-over" v-if="currentWinner">
+        <h2>Game Over!</h2>
+        <h3 v-if="currentWinner === 'player'">You are a winner!</h3>
+        <h3 v-else-if="currentWinner === 'monster'">Monster is a winner!</h3>
+        <h3 v-else="currentWinner === 'nobody'">It's a draw!</h3>
+        <button @click="restart">
+          Restart
+        </button>
+      </section>
+
       <section id="log" class="container">
         <h2>Battle Log</h2>
-        <ul></ul>
+        <p>
+          You won {{ playerWinsCounter }} time(s) | Monster won {{ monsterWinsCounter }} time(s)
+        </p>
+        <p>
+          Draw was {{ drawCounter }} time(s)
+        </p>
+        <ul>
+          <li
+            v-for="log in battleLogs"
+            :key="log"
+          >
+          <span :class="{
+            'log--player': log.person === 'Player',
+            'log--monster': log.person === 'Monster',
+          }"
+          >
+            {{ log.person + ' ' }}
+          </span>
+          <span>
+            {{ log.action + ' ' }}
+          </span>
+          <span :class="{
+            'log--damage': log.action === 'lost',
+            'log--heal': log.action === 'recovered',
+          }"
+          >
+            {{ log.hp }}hp
+          </span>
+          </li>
+        </ul>
       </section>
     </div>
   </body>
